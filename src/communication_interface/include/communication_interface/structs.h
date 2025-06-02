@@ -164,6 +164,21 @@ struct timestamped_angle_t
 {
     timestamp_t timestamp;
     angle_t angle;
+
+    constexpr static size_t size = sizeof(timestamp_t) + sizeof(angle_t);
+    std::vector<uint8_t> to_bytes() const
+    {
+        std::vector<uint8_t> buf;
+        buf.reserve(size);
+        detail::appendLE(buf, timestamp);
+        detail::appendLE(buf, angle);
+        return buf;
+    }
+    void from_bytes(const std::vector<uint8_t> &buf, size_t &offset)
+    {
+        timestamp = detail::readLE<timestamp_t>(buf, offset);
+        angle = detail::readLE<angle_t>(buf, offset);
+    }
 };
 
 struct odometry_t

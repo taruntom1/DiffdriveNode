@@ -34,8 +34,6 @@ void ControllerManager::manageQtConnections()
 
     QObject::connect(this, &ControllerManager::sendControllerProperties, commInterface, &CommunicationInterface::sendControllerProperties);
     QObject::connect(this, &ControllerManager::sendWheelData, commInterface, &CommunicationInterface::sendWheelData);
-    QObject::connect(this, &ControllerManager::sendControlMode, commInterface, &CommunicationInterface::sendControlMode);
-    QObject::connect(this, &ControllerManager::sendOdometryBroadcastStatus, commInterface, &CommunicationInterface::sendOdoBroadcastStatus);
 
     // TimeSyncClient Connections
     QObject::connect(this, &ControllerManager::startTimesync, timeSyncClient, &TimeSyncClient::startSync);
@@ -231,7 +229,6 @@ bool ControllerManager::setWheelData()
     return success;
 }
 
-
 bool ControllerManager::retryOperation(const std::function<bool()> &operation, int maxRetries, int delayMs)
 {
     int retries = 0;
@@ -256,7 +253,6 @@ bool ControllerManager::retryOperation(const std::function<bool()> &operation, i
     RCLCPP_ERROR(logger, "Operation failed after %d attempts", maxRetries);
     return false;
 }
-
 
 void ControllerManager::timeSync(int64_t sync_sys_time_ns, int64_t sync_mcu_time_ns, int64_t delta)
 {

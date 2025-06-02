@@ -82,6 +82,7 @@ odo_broadcast_flags_t StructSerialiser::fromJson_odo_broadcast_flags(const QJson
 QJsonObject StructSerialiser::toJson(const odometry_t &odo)
 {
     QJsonObject obj;
+    obj["timestamp"] = int(odo.timestamp);
     obj["angle"] = odo.angle;
     obj["rpm"] = odo.rpm;
     return obj;
@@ -89,6 +90,7 @@ QJsonObject StructSerialiser::toJson(const odometry_t &odo)
 odometry_t StructSerialiser::fromJson_odometry(const QJsonObject &obj)
 {
     odometry_t odo;
+    odo.timestamp = timestamp_t(obj.value("timestamp").toInt());
     odo.angle = angle_t(obj.value("angle").toInt());
     odo.rpm = angularvelocity_t(obj.value("rpm").toDouble());
     return odo;

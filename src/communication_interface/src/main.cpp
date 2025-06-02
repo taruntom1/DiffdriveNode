@@ -2,68 +2,70 @@
 #include <QThread>
 #include <rclcpp/rclcpp.hpp>
 
+// Project headers
 #include "serialhandler.h"
 #include "controllermanager.h"
+#include "odometry.h"
 #include "communicationinterface.h"
 #include "timesyncclient.h"
 #include "rosworker.h"
 
 int main(int argc, char *argv[])
 {
-    // --- 1. Initialize ROS 2 and Qt Application ---
+    // Initialize ROS2 and Qt core application
     rclcpp::init(argc, argv);
     QCoreApplication app(argc, argv);
 
-    // --- 2. Prepare Shared Data ---
-    controller_data_t controllerData;
-
-    // --- 3. Start ROS Worker ---
+    // --- ROS Worker Thread ---
     RosWorker *rosWorker = new RosWorker;
     rosWorker->start();
 
-    // --- Clock for timing ---
-    rclcpp::Clock clock(RCL_SYSTEM_TIME);
-
-    // --- 4. Set up Serial Communication in a Separate Thread ---
+    // --- Communication Thread and Components ---
     QThread *commThread = new QThread;
+
     SerialHandler *serialHandler = new SerialHandler;
-    CommunicationInterface *commInterface =
-        new CommunicationInterface(nullptr, serialHandler, &controllerData);
+    CommunicationInterface *commInterface = new CommunicationInterface(nullptr, serialHandler);
+
+    rclcpp::Clock clock(RCL_SYSTEM_TIME);
     TimeSyncClient *timeSyncClient = new TimeSyncClient(serialHandler, commInterface, &clock);
 
+    // Move components to the communication thread
     serialHandler->moveToThread(commThread);
     commInterface->moveToThread(commThread);
     timeSyncClient->moveToThread(commThread);
     commThread->start();
 
-    // --- controller manager ---
+    // --- Application Modules ---
     ControllerManager *controllerManager = new ControllerManager(commInterface, timeSyncClient);
-    
+    Odometry *odometry = new Odometry(commInterface, rosWorker);
 
-    // --- 5. Synchronize ROS and Qt Shutdowns ---
-    rclcpp::on_shutdown([&app]()
-                        { app.quit(); });
-    QObject::connect(&app, &QCoreApplication::aboutToQuit, []()
-                     {
+    // --- Graceful Shutdown Handling ---
+    rclcpp::on_shutdown([&app]() {
+        app.quit();
+    });
+
+    QObject::connect(&app, &QCoreApplication::aboutToQuit, []() {
         if (rclcpp::ok()) {
             rclcpp::shutdown();
-        } });
+        }
+    });
 
-    // --- 6. Execute Qt Event Loop ---
+    // --- Execute Application Loop ---
     int ret = app.exec();
 
-    // --- 7. Clean Up (Delete in Reverse Order of Creation) ---
+    // --- Cleanup ---
     rosWorker->quit();
     rosWorker->wait();
 
     commThread->quit();
     commThread->wait();
 
+    delete odometry;
+    delete controllerManager;
+    delete timeSyncClient;
     delete commInterface;
     delete serialHandler;
     delete commThread;
-    delete timeSyncClient;
-    delete controllerManager;
     delete rosWorker;
 
     return ret;

@@ -44,21 +44,16 @@ private:
 
 public slots:
 
-    // void setControlMode();
-    // void setOdoBroadcast();
-    // void setPIDConstants();
-    
     void timeSync(int64_t sync_sys_time_ns, int64_t sync_mcu_time_ns, int64_t delta);
-
 
 signals:
     void connectToController(const QString &port_name, int baud_rate);
     void disconnectFromController();
     void sendControllerProperties(const controller_properties_t properties);
     void sendWheelData(int id, const wheel_data_t wheel_data);
-    void sendControlMode(int motor_id, ControlMode mode);
-    void sendOdometryBroadcastStatus(int motor_id, odo_broadcast_flags_t flags);
-    void sendPIDConstants(int motor_id, int type, pid_constants_t pid_constants);
+    //void sendControlMode(int motor_id, ControlMode mode);
+    //void sendOdometryBroadcastStatus(int motor_id, odo_broadcast_flags_t flags);
+    //void sendPIDConstants(int motor_id, int type, pid_constants_t pid_constants);
 
     void startTimesync();
     void stopTimesync();
