@@ -1,0 +1,107 @@
+{
+    "controllerProperties": {
+        "numMotors": 2,
+        "odoBroadcastFrequency": 30,
+        "odoBroadcastStatus": {
+            "angle": false,
+            "pwm_value": false,
+            "speed": false
+        },
+        "run": false,
+        "updateFrequencies": {
+            "interfaceRun": 100
+        }
+    },
+    "serialConnDetails": {
+        "baud": 576000,
+        "port": "ttyUSB0"
+    },
+    "wheelData": [
+        {
+            "anglePIDConstants": {
+                "d": 0,
+                "i": 0,
+                "p": 0.10000000149011612
+            },
+            "control_mode": "PWM_DIRECT_CONTROL",
+            "motorConnections": {
+                "dir": 0,
+                "enc_a": 0,
+                "enc_b": 0,
+                "pwm": 0
+            },
+            "motor_id": 0,
+            "odoBroadcastStatus": {
+                "angle": false,
+                "pwm_value": false,
+                "speed": false
+            },
+            "odometryData": {
+                "angle": 0,
+                "rpm": 0
+            },
+            "pwmLimits": {
+                "max": 0,
+                "min": 0
+            },
+            "pwmValue": 0,
+            "setpoint": {
+                "angle": 0,
+                "rpm": 0
+            },
+            "speedPIDConstants": {
+                "d": 0,
+                "i": 0,
+                "p": 0.10000000149011612
+            },
+            "updateFrequenciesWheel": {
+                "angle_pid": 50,
+                "pwm": 50,
+                "speed_pid": 50
+            }
+        },
+        {
+            "anglePIDConstants": {
+                "d": 0,
+                "i": 0,
+                "p": 0
+            },
+            "control_mode": "PWM_DIRECT_CONTROL",
+            "motorConnections": {
+                "dir": 0,
+                "enc_a": 0,
+                "enc_b": 0,
+                "pwm": 0
+            },
+            "motor_id": 1,
+            "odoBroadcastStatus": {
+                "angle": false,
+                "pwm_value": false,
+                "speed": false
+            },
+            "odometryData": {
+                "angle": 0,
+                "rpm": 0
+            },
+            "pwmLimits": {
+                "max": 0,
+                "min": 0
+            },
+            "pwmValue": 0,
+            "setpoint": {
+                "angle": 0,
+                "rpm": 0
+            },
+            "speedPIDConstants": {
+                "d": 0,
+                "i": 0,
+                "p": 0
+            },
+            "updateFrequenciesWheel": {
+                "angle_pid": 50,
+                "pwm": 50,
+                "speed_pid": 50
+            }
+        }
+    ]
+}
