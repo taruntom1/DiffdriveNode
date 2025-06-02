@@ -1,7 +1,7 @@
 #include "communicationinterface.h"
 
-CommunicationInterface::CommunicationInterface(QObject *parent, SerialHandler *serialHandler, controller_data_t *controllerData)
-    : QObject{parent}, serialHandler(serialHandler), controllerData(controllerData)
+CommunicationInterface::CommunicationInterface(QObject *parent, SerialHandler *serialHandler)
+    : QObject{parent}, serialHandler(serialHandler)
 {
     connect(serialHandler, &SerialHandler::commandReceived, this, &CommunicationInterface::commandReceived, Qt::DirectConnection);
 }
@@ -57,7 +57,7 @@ void CommunicationInterface::stopAllBroadcast()
 {
     serialHandler->sendCommand(Command::STOP_ALL_BROADCAST);
     /*      emit propertySetUpdate("All broadcast stopped");
-     else
+    else
          emit propertySetUpdate("Failed to stop all broadcast"); */
 }
 
@@ -110,7 +110,7 @@ void CommunicationInterface::sendControllerProperties(controller_properties_t pr
 void CommunicationInterface::sendWheelData(int id, const wheel_data_t wheel_data)
 {
     std::vector<uint8_t> data;
-    data.reserve(wheel_data.size + 1);
+    data.reserve(wheel_data_t::size + 1);
     data.push_back(static_cast<uint8_t>(id)); // Motor ID
     auto motor_data_vec = wheel_data.to_bytes();
     data.insert(data.end(), motor_data_vec.begin(), motor_data_vec.end()); // Motor Data
@@ -118,23 +118,15 @@ void CommunicationInterface::sendWheelData(int id, const wheel_data_t wheel_data
     sendProperty(Command::SET_MOTOR_DATA, data, "Motor Data (Motor " + QString::number(id + 1) + ")");
 }
 
-void CommunicationInterface::sendPIDConstants(int motor_id, int pid_type)
+void CommunicationInterface::sendPIDConstants(int motor_id, int pid_type, pid_constants_t pid_constants)
 {
     std::vector<uint8_t> data;
     data.reserve(sizeof(pid_constants_t) + 2);
     data.push_back(static_cast<uint8_t>(motor_id)); // Motor ID
     data.push_back(static_cast<uint8_t>(pid_type)); // PID Type
 
-    if (pid_type == 0)
-    {
-        auto pid_data = controllerData->wheelData.at(motor_id).anglePIDConstants.to_bytes();
-        std::copy(pid_data.begin(), pid_data.end(), std::back_inserter(data));
-    }
-    else
-    {
-        auto pid_data = controllerData->wheelData.at(motor_id).speedPIDConstants.to_bytes();
-        std::copy(pid_data.begin(), pid_data.end(), std::back_inserter(data));
-    }
+    auto pid_data = pid_constants.to_bytes();
+    std::copy(pid_data.begin(), pid_data.end(), std::back_inserter(data));
 
     sendProperty(Command::SET_PID_CONSTANTS, data,
                  "PID Constants (Motor " + QString::number(motor_id) + (pid_type ? " Speed" : " Angle") + ")");
@@ -152,46 +144,32 @@ void CommunicationInterface::sendOdoBroadcastStatus(int motor_id, odo_broadcast_
     sendProperty(Command::SET_ODO_BROADCAST_STATUS, data, "Odometry broadcast status for motor " + QString::number(motor_id));
 }
 
-/* void CommunicationInterface::sendSetpoints(ControlMode mode)
+void CommunicationInterface::sendSetpoints(ControlMode mode, std::vector<float> setpoints)
 {
-    if (mode == ControlMode::POSITION_CONTROL)
-        sendAngleSetpoint();
-    else if (mode == ControlMode::SPEED_CONTROL)
-        sendSpeedSetpoint();
-    else if (mode == ControlMode::PWM_DIRECT_CONTROL)
-        sendPWMSetpoint();
-} */
-
-/* void CommunicationInterface::sendAngleSetpoint()
-{
-    sendSetpointsHelper<angle_t>(
-        Command::SET_MOTOR_ANGLE_SETPOINTS,
-        [](const wheel_data_t &wheel)
-        { return wheel.setpoint.angle; });
+    Command command;
+    switch (mode)
+    {
+    case ControlMode::PWM_DIRECT_CONTROL:
+        command = Command::SET_MOTOR_PWMS;
+        break;
+    case ControlMode::POSITION_CONTROL:
+        command = Command::SET_MOTOR_ANGLE_SETPOINTS;
+        break;
+    case ControlMode::SPEED_CONTROL:
+        command = Command::SET_MOTOR_SPEED_SETPOINTS;
+        break;
+    default:
+        return;
+    }
+    sendSetpointsHelper(command, setpoints);
 }
 
-void CommunicationInterface::sendSpeedSetpoint()
-{
-    sendSetpointsHelper<angularvelocity_t>(
-        Command::SET_MOTOR_SPEED_SETPOINTS,
-        [](const wheel_data_t &wheel)
-        { return wheel.setpoint.rpm; });
-}
-
-void CommunicationInterface::sendPWMSetpoint()
-{
-    sendSetpointsHelper<pwmvalue_t>(
-        Command::SET_MOTOR_PWMS,
-        [](const wheel_data_t &wheel)
-        { return wheel.pwmValue; });
-} */
-
-void CommunicationInterface::sendControlMode(int motor_id, ControlMode mode)
+void CommunicationInterface::sendControlMode(int motor_id, ControlMode control_mode)
 {
     std::vector<uint8_t> data;
     data.reserve(1 + sizeof(ControlMode));
     data.push_back(static_cast<char>(motor_id));
-    data.push_back(static_cast<char>(mode));
+    data.push_back(static_cast<char>(control_mode));
 
     sendProperty(Command::SET_MOTOR_CONTROL_MODES, data, "Control Mode (Motor " + QString::number(motor_id) + ")");
 }

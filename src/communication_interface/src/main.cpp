@@ -14,9 +14,6 @@ int main(int argc, char *argv[])
     rclcpp::init(argc, argv);
     QCoreApplication app(argc, argv);
 
-    // --- 2. Prepare Shared Data ---
-    controller_data_t controllerData;
-
     // --- 3. Start ROS Worker ---
     RosWorker *rosWorker = new RosWorker;
     rosWorker->start();
@@ -28,7 +25,7 @@ int main(int argc, char *argv[])
     QThread *commThread = new QThread;
     SerialHandler *serialHandler = new SerialHandler;
     CommunicationInterface *commInterface =
-        new CommunicationInterface(nullptr, serialHandler, &controllerData);
+        new CommunicationInterface(nullptr, serialHandler);
     TimeSyncClient *timeSyncClient = new TimeSyncClient(serialHandler, commInterface, &clock);
 
     serialHandler->moveToThread(commThread);
@@ -38,7 +35,6 @@ int main(int argc, char *argv[])
 
     // --- controller manager ---
     ControllerManager *controllerManager = new ControllerManager(commInterface, timeSyncClient);
-    
 
     // --- 5. Synchronize ROS and Qt Shutdowns ---
     rclcpp::on_shutdown([&app]()
