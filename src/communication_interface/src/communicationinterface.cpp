@@ -46,7 +46,7 @@ void CommunicationInterface::ping()
     stopAllBroadcast();
 
     // emit propertySetUpdate("Ping Send");
-    qint64 elapsed_time = serialHandler->ping(Command::PING);
+    // qint64 elapsed_time = serialHandler->ping(Command::PING); // * NOT USED SO COMMENTED
 
     // emit propertySetUpdate("Ping received in " + QString::number(elapsed_time) + " ms");
     serialHandler->setAutoReadCommandFlag(true);
@@ -233,7 +233,7 @@ void CommunicationInterface::receiveOdoAnglesTimestamped()
 {
     size_t size = sizeof(timestamped_angle_t) * num_wheels;
     std::vector<uint8_t> data = serialHandler->readData(size);
-    int i = 0;
+    // int i = 0; // * NOT USED SO COMMENTED
 
     std::vector<timestamped_angle_t> timestamped_angles(num_wheels);
     memcpy(timestamped_angles.data(), data.data(), size);

@@ -37,6 +37,7 @@ public slots:
     // void sendSetpoints(ControlMode mode, std::vector<pwmvalue_t> setpoints);
 private:
     SerialHandler *serialHandler;
+    controller_data_t *controllerData;
 
     int num_wheels = 0;
 
@@ -88,8 +89,7 @@ void CommunicationInterface::sendSetpointsHelper(Command command, std::vector<T>
 }
 
 template <typename T>
-void CommunicationInterface::receiveOdoData(
-    std::function<void(wheel_data_t &, T)> setter)
+void CommunicationInterface::receiveOdoData(std::function<void(wheel_data_t &, T)> setter)
 {
     size_t size = sizeof(T) * controllerData->wheelData.size();
     std::vector<uint8_t> data = serialHandler->readData(size);

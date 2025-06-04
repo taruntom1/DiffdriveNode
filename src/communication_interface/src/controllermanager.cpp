@@ -1,12 +1,18 @@
 #include "controllermanager.h"
 
-ControllerManager::ControllerManager(CommunicationInterface *commInterface, TimeSyncClient *timeSyncClient, QObject *parent)
-    : QObject(parent), commInterface(commInterface), timeSyncClient(timeSyncClient)
+ControllerManager::ControllerManager(
+    CommunicationInterface *commInterface,
+    TimeSyncClient *timeSyncClient,
+    QObject *parent)
+    : QObject(parent),
+      commInterface(commInterface),
+      timeSyncClient(timeSyncClient)
 {
     manageQtConnections();
 
     if (!readConfigurationJson())
         return;
+
     if (!retryOperation([&]()
                         { return connectController(); }, 10, 1000))
         return;
@@ -45,9 +51,8 @@ void ControllerManager::manageQtConnections()
 
 bool ControllerManager::readConfigurationJson()
 {
-    // std::string package_path = ament_index_cpp::get_package_share_directory("communication_interface");
-    // std::string path = package_path + "/config/controller_config.json";
-    std::string path = "/home/tarun/ros2_ws/install/communication_interface/share/communication_interface/config/controller_config.json";
+    std::string package_path = ament_index_cpp::get_package_share_directory("communication_interface");
+    std::string path = package_path + "/config/controller_config.json";
     QString json_path = QString::fromStdString(path);
 
     RCLCPP_INFO(logger, "Reading configuration JSON from: %s", json_path.toStdString().c_str());
@@ -231,7 +236,6 @@ bool ControllerManager::setWheelData()
     return success;
 }
 
-
 bool ControllerManager::retryOperation(const std::function<bool()> &operation, int maxRetries, int delayMs)
 {
     int retries = 0;
@@ -256,7 +260,6 @@ bool ControllerManager::retryOperation(const std::function<bool()> &operation, i
     RCLCPP_ERROR(logger, "Operation failed after %d attempts", maxRetries);
     return false;
 }
-
 
 void ControllerManager::timeSync(int64_t sync_sys_time_ns, int64_t sync_mcu_time_ns, int64_t delta)
 {
