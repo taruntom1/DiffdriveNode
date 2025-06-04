@@ -1,9 +1,10 @@
-#include "differential_drive_odometry.h"
+#include "encoderodometry.h"
 #include <cmath>
+#include <rclcpp/rclcpp.hpp>
 #include <tf2/LinearMath/Quaternion.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
 
-DifferentialDriveOdometry::DifferentialDriveOdometry(const differential_drive_odometry_config_t &config)
+EncoderOdometry::EncoderOdometry(const encoder_odometry_config_t &config)
     : last_left_angle_(0.0), last_right_angle_(0.0), last_timestamp_(-1.0),
       x_(0.0), y_(0.0), theta_(0.0), v_x_(0.0), omega_z_(0.0)
 {
@@ -13,14 +14,14 @@ DifferentialDriveOdometry::DifferentialDriveOdometry(const differential_drive_od
     twist_covariance_ = config.twist_covariance;
 }
 
-void DifferentialDriveOdometry::update(std::vector<timestamped_angle_t> &timestamped_angles)
+void EncoderOdometry::update(std::vector<timestamped_angle_t> &timestamped_angles)
 {
     float &left_angle = timestamped_angles[0].angle;
     float &right_angle = timestamped_angles[1].angle;
     uint64_t &timestamp_left = timestamped_angles[0].timestamp;
     uint64_t &timestamp_right = timestamped_angles[1].timestamp;
-    uint64_t timestamp = (timestamp_left + timestamp_right)/2;
-    
+    uint64_t timestamp = (timestamp_left + timestamp_right) / 2;
+
     if (last_timestamp_ < 0.0)
     {
         last_left_angle_ = left_angle;
@@ -55,27 +56,28 @@ void DifferentialDriveOdometry::update(std::vector<timestamped_angle_t> &timesta
     last_timestamp_ = timestamp;
 }
 
-double DifferentialDriveOdometry::getX() const { return x_; }
-double DifferentialDriveOdometry::getY() const { return y_; }
-double DifferentialDriveOdometry::getTheta() const { return theta_; }
+double EncoderOdometry::getX() const { return x_; }
+double EncoderOdometry::getY() const { return y_; }
+double EncoderOdometry::getTheta() const { return theta_; }
 
-double DifferentialDriveOdometry::getLinearVelocity() const { return v_x_; }
-double DifferentialDriveOdometry::getAngularVelocity() const { return omega_z_; }
+double EncoderOdometry::getLinearVelocity() const { return v_x_; }
+double EncoderOdometry::getAngularVelocity() const { return omega_z_; }
 
-void DifferentialDriveOdometry::resetPose(double x, double y, double theta)
+void EncoderOdometry::resetPose(double x, double y, double theta)
 {
     x_ = x;
     y_ = y;
     theta_ = theta;
 }
 
-nav_msgs::msg::Odometry DifferentialDriveOdometry::getOdometryMsg() const
+nav_msgs::msg::Odometry EncoderOdometry::getOdometryMsg() const
 {
 
     nav_msgs::msg::Odometry odom;
-    
+
     odom.header.frame_id = "";
     odom.child_frame_id = "";
+    odom.header.stamp = rclcpp::Time(last_timestamp_ + time_delta_ns_);
 
     odom.pose.pose.position.x = x_;
     odom.pose.pose.position.y = y_;
@@ -96,4 +98,9 @@ nav_msgs::msg::Odometry DifferentialDriveOdometry::getOdometryMsg() const
     odom.twist.covariance = std::move(twist_covariance_);
 
     return odom;
+}
+
+void EncoderOdometry::updateTimeDelta(int64_t delta_ns)
+{
+    time_delta_ns_ = delta_ns;
 }

@@ -1,12 +1,17 @@
 #include "controllermanager.h"
 
-ControllerManager::ControllerManager(CommunicationInterface *commInterface, TimeSyncClient *timeSyncClient, QObject *parent)
-    : QObject(parent), commInterface(commInterface), timeSyncClient(timeSyncClient)
+ControllerManager::ControllerManager(CommunicationInterface *commInterface,
+                                     TimeSyncClient *timeSyncClient,
+                                     SerialConfig serialConfig,
+                                     QObject *parent)
+    : QObject(parent), commInterface(commInterface), timeSyncClient(timeSyncClient),
+      port_name(QString::fromStdString(serialConfig.port)), baud_rate(serialConfig.baud)
 {
     manageQtConnections();
 
     if (!readConfigurationJson())
         return;
+
     if (!retryOperation([&]()
                         { return connectController(); }, 10, 1000))
         return;
@@ -38,7 +43,6 @@ void ControllerManager::manageQtConnections()
     // TimeSyncClient Connections
     QObject::connect(this, &ControllerManager::startTimesync, timeSyncClient, &TimeSyncClient::startSync);
     QObject::connect(this, &ControllerManager::stopTimesync, timeSyncClient, &TimeSyncClient::stopSync);
-    QObject::connect(timeSyncClient, &TimeSyncClient::syncCompleted, this, &ControllerManager::timeSync);
 }
 
 bool ControllerManager::readConfigurationJson()
@@ -81,8 +85,6 @@ bool ControllerManager::readConfigurationJson()
 
     controller_data_t data = StructSerialiser::fromJson_controller_data(json);
 
-    port_name = QString::fromStdString(data.conn_details.port);
-    baud_rate = data.conn_details.baud;
     controller_data.controllerProperties = data.controllerProperties;
     controller_data.wheelData = data.wheelData;
 
@@ -252,10 +254,4 @@ bool ControllerManager::retryOperation(const std::function<bool()> &operation, i
 
     RCLCPP_ERROR(logger, "Operation failed after %d attempts", maxRetries);
     return false;
-}
-
-void ControllerManager::timeSync(int64_t sync_sys_time_ns, int64_t sync_mcu_time_ns, int64_t delta)
-{
-    double delsec = static_cast<double>(delta) / 1000000000.0;
-    RCLCPP_INFO(logger, "Time synchronization: System time %lld, MCU time %lld, Delta %.3f sec", sync_sys_time_ns, sync_mcu_time_ns, delsec);
 }

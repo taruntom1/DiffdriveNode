@@ -45,7 +45,7 @@ private slots:
     void readSyncReply();
 
 signals:
-    void syncCompleted(int64_t sync_sys_time_ns, int64_t sync_mcu_time_ns, int64_t avg_delta, int64_t delay);
+    void syncCompleted(int64_t avg_delta);
 
 };
 

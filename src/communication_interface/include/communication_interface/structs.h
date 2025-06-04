@@ -276,18 +276,19 @@ struct wheel_data_t
     ControlMode control_mode = ControlMode::PWM_DIRECT_CONTROL;
     pid_constants_t anglePIDConstants;
     pid_constants_t speedPIDConstants;
-    limits_pwm_t pwmLimits;
     connections_wheel_t motorConnections;
     odometry_t odometryData;
     setpoint_t setpoint;
     odo_broadcast_flags_t odoBroadcastStatus;
     wheel_update_frequencies_t updateFrequenciesWheel;
+    float radians_per_tick = 1.0f;
     pwmvalue_t pwmValue = 0;
 
     constexpr static size_t size = sizeof(motor_id) + sizeof(control_mode) +
-                                   pid_constants_t::size * 2 + limits_pwm_t::size +
-                                   connections_wheel_t::size + odometry_t::size + setpoint_t::size +
-                                   odo_broadcast_flags_t::size + wheel_update_frequencies_t::size;
+                                   pid_constants_t::size * 2 + connections_wheel_t::size +
+                                   odometry_t::size + setpoint_t::size +
+                                   odo_broadcast_flags_t::size + wheel_update_frequencies_t::size +
+                                   sizeof(radians_per_tick) + sizeof(pwmValue);
 
     std::vector<uint8_t> to_bytes() const
     {
@@ -300,8 +301,6 @@ struct wheel_data_t
         buf.insert(buf.end(), a.begin(), a.end());
         auto s = speedPIDConstants.to_bytes();
         buf.insert(buf.end(), s.begin(), s.end());
-        auto l = pwmLimits.to_bytes();
-        buf.insert(buf.end(), l.begin(), l.end());
         auto c = motorConnections.to_bytes();
         buf.insert(buf.end(), c.begin(), c.end());
         auto o = odometryData.to_bytes();
@@ -312,6 +311,7 @@ struct wheel_data_t
         buf.insert(buf.end(), f.begin(), f.end());
         auto uf = updateFrequenciesWheel.to_bytes();
         buf.insert(buf.end(), uf.begin(), uf.end());
+        detail::appendLE(buf, radians_per_tick);
         detail::appendLE(buf, pwmValue);
         return buf;
     }
@@ -321,12 +321,12 @@ struct wheel_data_t
         ::from_bytes(control_mode, buf, offset);
         anglePIDConstants.from_bytes(buf, offset);
         speedPIDConstants.from_bytes(buf, offset);
-        pwmLimits.from_bytes(buf, offset);
         motorConnections.from_bytes(buf, offset);
         odometryData.from_bytes(buf, offset);
         setpoint.from_bytes(buf, offset);
         odoBroadcastStatus.from_bytes(buf, offset);
         updateFrequenciesWheel.from_bytes(buf, offset);
+        radians_per_tick = detail::readLE<float>(buf, offset);
         pwmValue = detail::readLE<pwmvalue_t>(buf, offset);
     }
 };

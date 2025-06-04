@@ -5,10 +5,11 @@
 // Project headers
 #include "serialhandler.h"
 #include "controllermanager.h"
-#include "odometry.h"
 #include "communicationinterface.h"
 #include "timesyncclient.h"
 #include "rosworker.h"
+#include "nodeconfigparser.h"
+#include "diffdrive.h"
 
 int main(int argc, char *argv[])
 {
@@ -36,19 +37,41 @@ int main(int argc, char *argv[])
     commThread->start();
 
     // --- Application Modules ---
-    ControllerManager *controllerManager = new ControllerManager(commInterface, timeSyncClient);
-    Odometry *odometry = new Odometry(commInterface, rosWorker);
+    // Reading configurations from yaml file
+    // std::string package_path = ament_index_cpp::get_package_share_directory("communication_interface");
+    // std::string path = package_path + "/config/node_config.yaml";
+    std::string path = "/home/tarun/ros2_ws/install/communication_interface/share/communication_interface/config/node_config.yaml";
+    NodeConfigParser parser(path);
+
+    if (!parser.isValid())
+    {
+        std::cerr << "Failed to load config file.\n";
+        return 1;
+    }
+
+    SerialConfig serial = parser.getSerialConfig();
+    ControllerManager *controllerManager = new ControllerManager(commInterface, timeSyncClient, serial);
+    diff_drive_config_t diff_drive_config{
+        .odometry_config{
+            .encoder_odometry_config{
+                .wheel_radius = 1,
+                .wheel_base = 1}},
+        .diff_drive_control_config{
+            .wheel_radius = 1,
+            .wheel_base = 1},
+    };
+    DiffDrive *diffDrive = new DiffDrive(commInterface, rosWorker, timeSyncClient, diff_drive_config);
 
     // --- Graceful Shutdown Handling ---
-    rclcpp::on_shutdown([&app]() {
-        app.quit();
-    });
+    rclcpp::on_shutdown([&app]()
+                        { app.quit(); });
 
-    QObject::connect(&app, &QCoreApplication::aboutToQuit, []() {
-        if (rclcpp::ok()) {
+    QObject::connect(&app, &QCoreApplication::aboutToQuit, []()
+                     {
+        if (rclcpp::ok())
+        {
             rclcpp::shutdown();
-        }
-    });
+        } });
 
     // --- Execute Application Loop ---
     int ret = app.exec();
@@ -60,7 +83,6 @@ int main(int argc, char *argv[])
     commThread->quit();
     commThread->wait();
 
-    delete odometry;
     delete controllerManager;
     delete timeSyncClient;
     delete commInterface;

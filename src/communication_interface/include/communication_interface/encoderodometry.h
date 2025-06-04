@@ -1,12 +1,13 @@
 #pragma once
 
+#include <rclcpp/rclcpp.hpp>
 #include <nav_msgs/msg/odometry.hpp>
 #include <string>
 #include <array>
 #include <vector>
 #include "structs.h"
 
-struct differential_drive_odometry_config_t
+struct encoder_odometry_config_t
 {
     double wheel_radius;
     double wheel_base;
@@ -14,12 +15,14 @@ struct differential_drive_odometry_config_t
     std::array<double, 36> twist_covariance;
 };
 
-class DifferentialDriveOdometry
+class EncoderOdometry
 {
 public:
-    DifferentialDriveOdometry(const differential_drive_odometry_config_t &config);
+    EncoderOdometry(const encoder_odometry_config_t &config);
 
     void update(std::vector<timestamped_angle_t> &timestamped_angles);
+
+    void updateTimeDelta(int64_t delta_ns);
 
     double getX() const;
     double getY() const;
@@ -35,6 +38,8 @@ public:
 private:
     double wheel_radius_;
     double wheel_base_;
+
+    int64_t time_delta_ns_; // Time difference between this system and MCU
 
     std::array<double, 36> pose_covariance_;
     std::array<double, 36> twist_covariance_;

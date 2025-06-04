@@ -23,7 +23,11 @@ find_package(nav_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(tf2 REQUIRED)
 find_package(tf2_geometry_msgs REQUIRED)
+
 find_package(Qt6 REQUIRED COMPONENTS Core SerialPort)
+
+find_package(yaml-cpp REQUIRED)
+
 
 # Collect source and header files
 file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/src/*.cpp")
@@ -42,6 +46,7 @@ target_include_directories(${PROJECT_NAME}_node
 target_link_libraries(${PROJECT_NAME}_node
   Qt6::Core
   Qt6::SerialPort
+  yaml-cpp
 )
 
 ament_target_dependencies(${PROJECT_NAME}_node

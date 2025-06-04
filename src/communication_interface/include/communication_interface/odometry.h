@@ -6,35 +6,34 @@
 #include <QObject>
 
 #include "structs.h"
-#include "differential_drive_odometry.h"
+#include "encoderodometry.h"
 #include "communicationinterface.h"
 #include "rosworker.h"
+
+struct odometry_config_t
+{
+    encoder_odometry_config_t encoder_odometry_config;
+};
 
 class Odometry : public QObject
 {
     Q_OBJECT
 public:
-    explicit Odometry(CommunicationInterface *communication_interface = nullptr, RosWorker *ros = nullptr, QObject *parent = nullptr);
+    explicit Odometry(odometry_config_t config = {},
+                      QObject *parent = nullptr);
 
     void resetPose(double x, double y, double theta);
 
-private:
-    CommunicationInterface *communication_interface_;
-    RosWorker *ros_;
-    // Differential drive odometry object
-    differential_drive_odometry_config_t diff_drive_config;
-    DifferentialDriveOdometry diff_drive_odometry_;
-
-    // Sync time for ros and MCU
-    int64_t sync_sys_time_ns;
-    int64_t sync_mcu_time_ns;
-
-    void makeConnections();
+    void updateTimeDelta(int64_t delta_ns);
 
 public slots:
-    void updateDifferentialDrive(std::vector<timestamped_angle_t> timestamped_angles);
-    void updateSyncTime(int64_t sys_time_ns, int64_t mcu_time_ns);
+    void updateEncoderOdometry(std::vector<timestamped_angle_t> timestamped_angles);
+
+private:
+    // Differential drive odometry object
+    encoder_odometry_config_t encoder_odometry_config;
+    EncoderOdometry encoderOdometry_;
 
 signals:
-    void publishOdometry(nav_msgs::msg::Odometry odom_msg);
+    void publishEncoderOdometry(nav_msgs::msg::Odometry odom_msg);
 };

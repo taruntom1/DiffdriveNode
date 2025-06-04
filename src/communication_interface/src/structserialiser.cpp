@@ -177,12 +177,12 @@ QJsonObject StructSerialiser::toJson(const wheel_data_t &wd)
     obj["control_mode"] = controlModeToString(wd.control_mode);
     obj["anglePIDConstants"] = toJson(wd.anglePIDConstants);
     obj["speedPIDConstants"] = toJson(wd.speedPIDConstants);
-    obj["pwmLimits"] = toJson(wd.pwmLimits);
     obj["motorConnections"] = toJson(wd.motorConnections);
     obj["odometryData"] = toJson(wd.odometryData);
     obj["setpoint"] = toJson(wd.setpoint);
     obj["odoBroadcastStatus"] = toJson(wd.odoBroadcastStatus);
     obj["updateFrequenciesWheel"] = toJson(wd.updateFrequenciesWheel);
+    obj["radians_per_tick"] = wd.radians_per_tick;
     obj["pwmValue"] = wd.pwmValue;
     return obj;
 }
@@ -194,12 +194,12 @@ wheel_data_t StructSerialiser::fromJson_wheel_data(const QJsonObject &obj)
     wd.control_mode = controlModeFromString(obj.value("control_mode").toString());
     wd.anglePIDConstants = fromJson_pid(obj.value("anglePIDConstants").toObject());
     wd.speedPIDConstants = fromJson_pid(obj.value("speedPIDConstants").toObject());
-    wd.pwmLimits = fromJson_limits_pwm(obj.value("pwmLimits").toObject());
     wd.motorConnections = fromJson_connections_wheel(obj.value("motorConnections").toObject());
     wd.odometryData = fromJson_odometry(obj.value("odometryData").toObject());
     wd.setpoint = fromJson_setpoint(obj.value("setpoint").toObject());
     wd.odoBroadcastStatus = fromJson_odo_broadcast_flags(obj.value("odoBroadcastStatus").toObject());
     wd.updateFrequenciesWheel = fromJson_wheel_update_frequencies(obj.value("updateFrequenciesWheel").toObject());
+    wd.radians_per_tick = float(obj.value("radians_per_tick").toDouble());
     wd.pwmValue = pwmvalue_t(obj.value("pwmValue").toInt());
     return wd;
 }
