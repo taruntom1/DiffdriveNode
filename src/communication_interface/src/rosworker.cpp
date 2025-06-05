@@ -5,6 +5,7 @@ RosWorker::RosWorker(QObject *parent)
       node_(std::make_shared<rclcpp::Node>("MotorController"))
 {
     makeOdoPublisher();
+    makeControlSubscriber();
 }
 
 std::shared_ptr<rclcpp::Node> RosWorker::getNode() const
@@ -22,6 +23,13 @@ void RosWorker::makeOdoPublisher()
     odom_pub_ = node_->create_publisher<nav_msgs::msg::Odometry>("odom", 10);
 }
 
+void RosWorker::makeControlSubscriber()
+{
+    control_sub_ = node_->create_subscription<geometry_msgs::msg::Twist>(
+        "/cmd_vel", 10,
+        std::bind(&RosWorker::cmdVelCallback, this, std::placeholders::_1));
+}
+
 void RosWorker::publishOdometry(nav_msgs::msg::Odometry odom_msg)
 {
     odom_msg.header.frame_id = "map";
@@ -30,4 +38,9 @@ void RosWorker::publishOdometry(nav_msgs::msg::Odometry odom_msg)
     {
         odom_pub_->publish(odom_msg);
     }
+}
+
+void RosWorker::cmdVelCallback(const geometry_msgs::msg::Twist::SharedPtr msg)
+{
+    emit commandVelReceived(*msg);
 }

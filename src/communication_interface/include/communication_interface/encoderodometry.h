@@ -6,11 +6,16 @@
 #include <array>
 #include <vector>
 #include "structs.h"
+#include "RollingMeanAccumulator.h"
 
 struct encoder_odometry_config_t
 {
-    double wheel_radius;
+    double left_wheel_radius;
+    double right_wheel_radius;
     double wheel_base;
+    bool use_exact_integration;
+    int rolling_window_size;
+
     std::array<double, 36> pose_covariance;
     std::array<double, 36> twist_covariance;
 };
@@ -32,12 +37,23 @@ public:
     double getAngularVelocity() const;
 
     void resetPose(double x, double y, double theta);
+    void resetAccumulators();
+    void updateFromVelocity(double linear, double angular, int64_t timestamp_ns);
 
     nav_msgs::msg::Odometry getOdometryMsg() const;
 
 private:
-    double wheel_radius_;
+    void integrateExact(double linear, double angular);
+    void integrateRungeKutta2(double linear, double angular);
+
     double wheel_base_;
+
+    double left_wheel_radius_;
+    double right_wheel_radius_;
+    RollingMeanAccumulator linear_accumulator_;
+    RollingMeanAccumulator angular_accumulator_;
+    size_t rolling_window_size_ = 10;
+    bool use_exact_integration_ = true;
 
     int64_t time_delta_ns_; // Time difference between this system and MCU
 

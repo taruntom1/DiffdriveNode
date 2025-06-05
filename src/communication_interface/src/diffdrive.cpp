@@ -27,7 +27,7 @@ void DiffDrive::makeConnections()
     connect(communication_interface_, &CommunicationInterface::encoderOdometryReceived, &odometry_, &Odometry::updateEncoderOdometry);
     connect(&odometry_, &Odometry::publishEncoderOdometry, ros_worker_, &RosWorker::publishOdometry);
 
-    // connect(ros_worker_, &RosWorker::setControl, &control_, &DiffDriveControl::onVelocityCommand); // not implemented yet
+    connect(ros_worker_, &RosWorker::commandVelReceived, &control_, &DiffDriveControl::onVelocityCommand); // not implemented yet
     connect(&control_, &DiffDriveControl::sendSetpoints, communication_interface_, &CommunicationInterface::sendSetpoints);
 
     connect(time_sync_client_, &TimeSyncClient::syncCompleted, this, &DiffDrive::updateTimeDelta);

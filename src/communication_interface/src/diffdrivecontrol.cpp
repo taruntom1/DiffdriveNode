@@ -17,8 +17,6 @@ void DiffDriveControl::onVelocityCommand(geometry_msgs::msg::Twist cmd_vel)
     const float half_base = wheel_base_ * 0.5;
 
     // Differential‐drive inverse kinematics:
-    //   v_left  = (v - ω * (wheel_base/2)) / wheel_radius
-    //   v_right = (v + ω * (wheel_base/2)) / wheel_radius
     const float v_left = (v - half_base * w) / wheel_radius_;
     const float v_right = (v + half_base * w) / wheel_radius_;
 

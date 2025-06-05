@@ -51,15 +51,9 @@ int main(int argc, char *argv[])
 
     SerialConfig serial = parser.getSerialConfig();
     ControllerManager *controllerManager = new ControllerManager(commInterface, timeSyncClient, serial);
-    diff_drive_config_t diff_drive_config{
-        .odometry_config{
-            .encoder_odometry_config{
-                .wheel_radius = 1,
-                .wheel_base = 1}},
-        .diff_drive_control_config{
-            .wheel_radius = 1,
-            .wheel_base = 1},
-    };
+    diff_drive_config_t diff_drive_config;
+    diff_drive_config.setWheelRadius(1);
+    diff_drive_config.setWheelBase(1);
     DiffDrive *diffDrive = new DiffDrive(commInterface, rosWorker, timeSyncClient, diff_drive_config);
 
     // --- Graceful Shutdown Handling ---
@@ -89,6 +83,7 @@ int main(int argc, char *argv[])
     delete serialHandler;
     delete commThread;
     delete rosWorker;
+    delete diffDrive;
 
     return ret;
 }

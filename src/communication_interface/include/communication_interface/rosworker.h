@@ -19,15 +19,18 @@ public slots:
     void publishOdometry(nav_msgs::msg::Odometry odom_msg);
 
 signals:
-    void messageReceived(const QString &msg);
+    void commandVelReceived(geometry_msgs::msg::Twist cmd_vel);
 
 protected:
     void run() override;
 
 private:
     std::shared_ptr<rclcpp::Node> node_;
-    rclcpp::Subscription<std_msgs::msg::String>::SharedPtr sub_;
+    rclcpp::Subscription<geometry_msgs::msg::Twist>::SharedPtr control_sub_;
     rclcpp::Publisher<nav_msgs::msg::Odometry>::SharedPtr odom_pub_; // Odometry publisher
 
     void makeOdoPublisher();
+    void makeControlSubscriber();
+
+    void cmdVelCallback(const geometry_msgs::msg::Twist::SharedPtr msg);
 };

@@ -14,6 +14,17 @@ struct diff_drive_config_t
 {
     odometry_config_t odometry_config;
     diff_drive_control_config_t diff_drive_control_config;
+
+    void setWheelRadius(float wheel_radius)
+    {
+        odometry_config.encoder_odometry_config.wheel_radius = wheel_radius;
+        diff_drive_control_config.wheel_radius = wheel_radius;
+    }
+    void setWheelBase(float wheel_base)
+    {
+        odometry_config.encoder_odometry_config.wheel_base;
+        diff_drive_control_config.wheel_base = wheel_base;
+    }
 };
 
 class DiffDrive : public QObject
