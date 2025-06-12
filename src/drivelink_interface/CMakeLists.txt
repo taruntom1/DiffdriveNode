@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.8)
-project(communication_interface)
+project(drivelink_interface)
 
 # Enable warnings
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
@@ -31,7 +31,7 @@ find_package(yaml-cpp REQUIRED)
 
 # Collect source and header files
 file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/src/*.cpp")
-file(GLOB_RECURSE HEADERS CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/include/communication_interface/*.h")
+file(GLOB_RECURSE HEADERS CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/include/drivelink_interface/*.h")
 
 # Add the executable
 add_executable(${PROJECT_NAME}_node ${SOURCES} ${HEADERS})
@@ -39,7 +39,7 @@ add_executable(${PROJECT_NAME}_node ${SOURCES} ${HEADERS})
 # Set include directories
 target_include_directories(${PROJECT_NAME}_node
   PRIVATE
-    ${CMAKE_SOURCE_DIR}/include/communication_interface
+    ${CMAKE_SOURCE_DIR}/include/drivelink_interface
 )
 
 # Link Qt6 and ROS2 libraries
