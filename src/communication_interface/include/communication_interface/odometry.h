@@ -27,7 +27,7 @@ public:
     void updateTimeDelta(int64_t delta_ns);
 
 public slots:
-    void updateEncoderOdometry(std::vector<timestamped_angle_t> timestamped_angles);
+    void updateEncoderOdometry(std::pair<timestamp_t, std::vector<odometry_t>> odometry);
 
 private:
     // Differential drive odometry object

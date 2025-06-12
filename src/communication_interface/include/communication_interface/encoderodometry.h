@@ -25,7 +25,7 @@ class EncoderOdometry
 public:
     EncoderOdometry(const encoder_odometry_config_t &config);
 
-    void update(std::vector<timestamped_angle_t> &timestamped_angles);
+    void update(std::pair<timestamp_t, std::vector<odometry_t>> odometry);
 
     void updateTimeDelta(int64_t delta_ns);
 

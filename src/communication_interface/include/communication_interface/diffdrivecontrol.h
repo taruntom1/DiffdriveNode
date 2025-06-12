@@ -45,7 +45,7 @@ signals:
      * @param left_wheel_vel   Angular velocity for left wheel [rad/s]
      * @param right_wheel_vel  Angular velocity for right wheel [rad/s]
      */
-    void sendSetpoints(ControlMode mode, std::vector<angularvelocity_t> velocities);
+    void sendSetpoints(std::vector<float> velocities);
 
 private:
     float wheel_radius_; ///< Radius of one wheel [m]

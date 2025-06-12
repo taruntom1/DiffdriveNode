@@ -1,18 +1,16 @@
 #ifndef STRUCTSERIALISER_H
 #define STRUCTSERIALISER_H
 
-#include <QObject>
-#include <QString>
-#include <QJsonObject>
+#include <QDebug>
 #include <QJsonArray>
 #include <QJsonDocument>
-#include <QDebug>
-#include <vector>
+#include <QJsonObject>
+#include <QObject>
+#include <QString>
 
 #include "structs.h"
 
-class StructSerialiser : public QObject
-{
+class StructSerialiser : public QObject {
     Q_OBJECT
 private:
     static QString controlModeToString(ControlMode mode);
@@ -35,7 +33,8 @@ public:
 
     // odo_broadcast_flags_t
     static QJsonObject toJson(const odo_broadcast_flags_t &);
-    static odo_broadcast_flags_t fromJson_odo_broadcast_flags(const QJsonObject &);
+    static odo_broadcast_flags_t
+    fromJson_odo_broadcast_flags(const QJsonObject &);
 
     // odometry_t
     static QJsonObject toJson(const odometry_t &);
@@ -47,7 +46,8 @@ public:
 
     // wheel_update_frequencies_t
     static QJsonObject toJson(const wheel_update_frequencies_t &);
-    static wheel_update_frequencies_t fromJson_wheel_update_frequencies(const QJsonObject &);
+    static wheel_update_frequencies_t
+    fromJson_wheel_update_frequencies(const QJsonObject &);
 
     // ControlMode enum
     static QJsonValue controlModeToJson(ControlMode mode);
@@ -63,11 +63,13 @@ public:
 
     // controller_properties_t
     static QJsonObject toJson(const controller_properties_t &);
-    static controller_properties_t fromJson_controller_properties(const QJsonObject &);
+    static controller_properties_t
+    fromJson_controller_properties(const QJsonObject &);
 
     // serial_conn_details_t
     static QJsonObject toJson(const serial_conn_details_t &scd);
-    static serial_conn_details_t fromJson_serial_conn_details(const QJsonObject &obj);
+    static serial_conn_details_t
+    fromJson_serial_conn_details(const QJsonObject &obj);
 
     // controller_data_t
     static QJsonObject toJson(const controller_data_t &);

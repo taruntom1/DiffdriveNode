@@ -34,7 +34,7 @@ public slots:
 
     void sendControlMode(int motor_id, ControlMode mode);
 
-    void sendSetpoints(ControlMode mode, std::vector<float> setpoints);
+    void sendSetpoints(std::vector<float> setpoints);
 
 signals:
     void connectionStatusChange(int status, const QString &error_string);
@@ -43,8 +43,7 @@ signals:
     void controllerPropertiesReceived();
     void motorDataReceived(int motor_id);
 
-    void odometryDataReceived();
-    void encoderOdometryReceived(std::vector<timestamped_angle_t> timestamped_angles);
+    void odometryDataReceived(std::pair<timestamp_t, std::vector<odometry_t>>);
 
     void timeSyncReplyReceived();
 
@@ -58,22 +57,5 @@ private:
     void restoreAllBroadcast();
     void sendProperty(Command command, const std::vector<uint8_t> &data, const QString &property_name);
 
-    void receiveOdoAnglesTimestamped();
-
-    template <typename T>
-    void sendSetpointsHelper(Command command, std::vector<T> &setpoints);
+    void receiveOdometry();
 };
-
-template <typename T>
-void CommunicationInterface::sendSetpointsHelper(Command command, std::vector<T> &setpoints)
-{
-    std::vector<uint8_t> data(sizeof(T) * setpoints.size() + 4);
-
-    constexpr uint8_t header[] = {0xAA, 0xAA, 0xAA};
-    std::memcpy(data.data(), header, 3);
-
-    data[3] = static_cast<uint8_t>(command);
-
-    std::memcpy(data.data() + 4, setpoints.data(), setpoints.size() * sizeof(T));
-    serialHandler->sendData(data);
-}

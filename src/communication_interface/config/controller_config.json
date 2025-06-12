@@ -1,21 +1,14 @@
 {
     "controllerProperties": {
         "numMotors": 2,
-        "odoBroadcastFrequency": 30,
-        "odoBroadcastStatus": {
-            "angle": false,
-            "pwm_value": false,
-            "speed": false,
-            "timestamped_angle": false
-        },
-        "run": false,
         "updateFrequencies": {
-            "interfaceRun": 50
+            "control_run_frequency": 100,
+            "odo_broadcast_frequency": 50
         }
     },
     "serialConnDetails": {
         "baud": 576000,
-        "port": "ttyUSB0"
+        "port": "COM5"
     },
     "wheelData": [
         {
@@ -24,43 +17,24 @@
                 "i": 0,
                 "p": 0
             },
-            "control_mode": "POSITION_CONTROL",
+            "control_mode": "OFF",
             "motorConnections": {
-                "dir": 0,
-                "enc_a": 0,
-                "enc_b": 0,
-                "pwm": 0
+                "dir": 15,
+                "enc_a": 4,
+                "enc_b": 5,
+                "pwm": 16
             },
             "motor_id": 0,
             "odoBroadcastStatus": {
                 "angle": false,
                 "pwm_value": false,
-                "speed": false,
-                "timestamped_angle": true
+                "speed": false
             },
-            "odometryData": {
-                "angle": 0,
-                "rpm": 0,
-                "timestamp": 0
-            },
-            "pwmLimits": {
-                "max": 0,
-                "min": 0
-            },
-            "pwmValue": 0,
-            "setpoint": {
-                "angle": 0,
-                "rpm": 0
-            },
+            "radians_per_tick": 1,
             "speedPIDConstants": {
                 "d": 0,
                 "i": 0,
                 "p": 0
-            },
-            "updateFrequenciesWheel": {
-                "angle_pid": 50,
-                "pwm": 50,
-                "speed_pid": 50
             }
         },
         {
@@ -69,43 +43,24 @@
                 "i": 0,
                 "p": 0
             },
-            "control_mode": "PWM_DIRECT_CONTROL",
+            "control_mode": "OFF",
             "motorConnections": {
-                "dir": 0,
-                "enc_a": 0,
-                "enc_b": 0,
-                "pwm": 0
+                "dir": 17,
+                "enc_a": 6,
+                "enc_b": 7,
+                "pwm": 18
             },
             "motor_id": 1,
             "odoBroadcastStatus": {
                 "angle": false,
                 "pwm_value": false,
-                "speed": false,
-                "timestamped_angle": false
+                "speed": false
             },
-            "odometryData": {
-                "angle": 0,
-                "rpm": 0,
-                "timestamp": 0
-            },
-            "pwmLimits": {
-                "max": 0,
-                "min": 0
-            },
-            "pwmValue": 0,
-            "setpoint": {
-                "angle": 0,
-                "rpm": 0
-            },
+            "radians_per_tick": 1,
             "speedPIDConstants": {
                 "d": 0,
                 "i": 0,
                 "p": 0
-            },
-            "updateFrequenciesWheel": {
-                "angle_pid": 50,
-                "pwm": 50,
-                "speed_pid": 50
             }
         }
     ]

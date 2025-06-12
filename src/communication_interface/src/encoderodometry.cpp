@@ -19,13 +19,11 @@ EncoderOdometry::EncoderOdometry(const encoder_odometry_config_t &config)
     twist_covariance_ = config.twist_covariance;
 }
 
-void EncoderOdometry::update(std::vector<timestamped_angle_t> &timestamped_angles)
+void EncoderOdometry::update(std::pair<timestamp_t, std::vector<odometry_t>> odometry)
 {
-    float &left_angle = timestamped_angles[0].angle;
-    float &right_angle = timestamped_angles[1].angle;
-    uint64_t &timestamp_left = timestamped_angles[0].timestamp;
-    uint64_t &timestamp_right = timestamped_angles[1].timestamp;
-    uint64_t timestamp = (timestamp_left + timestamp_right) / 2;
+    float &left_angle = odometry.second.at(0).angle;
+    float &right_angle = odometry.second.at(1).angle;
+    uint64_t timestamp = odometry.first * 1000; // Convert to nanoseconds
 
     if (last_timestamp_ < 0.0)
     {

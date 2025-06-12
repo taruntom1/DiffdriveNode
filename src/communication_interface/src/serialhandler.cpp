@@ -2,11 +2,12 @@
 #include <QDebug>
 
 SerialHandler::SerialHandler(QObject *parent)
-    : QObject{parent},
-      serial(new QSerialPort(this))
+    : QObject{parent}, serial(new QSerialPort(this))
 {
-    connect(serial, &QSerialPort::readyRead, this, &SerialHandler::handleReadyRead);
-    connect(this, &SerialHandler::parseBufferSignal, this, &SerialHandler::parseBuffer, Qt::QueuedConnection);
+    connect(serial, &QSerialPort::readyRead, this,
+            &SerialHandler::handleReadyRead);
+    connect(this, &SerialHandler::parseBufferSignal, this,
+            &SerialHandler::parseBuffer, Qt::QueuedConnection);
 }
 
 SerialHandler::~SerialHandler()
@@ -15,7 +16,8 @@ SerialHandler::~SerialHandler()
         serial->close();
 }
 
-bool SerialHandler::connectSerial(const QString &port_name, int baud_rate, QString *error_message)
+bool SerialHandler::connectSerial(const QString &port_name, int baud_rate,
+                                  QString *error_message)
 {
     if (serial->isOpen())
     {
@@ -41,12 +43,14 @@ bool SerialHandler::connectSerial(const QString &port_name, int baud_rate, QStri
     }
 }
 
-void SerialHandler::disconnectSerial()
+bool SerialHandler::disconnectSerial()
 {
     if (serial->isOpen())
     {
         serial->close();
+        return true;
     }
+    return false;
 }
 
 bool SerialHandler::checkConnection()
@@ -125,7 +129,8 @@ bool SerialHandler::readCommand(Command &command, int timeoutMs)
     {
         if (serial->waitForReadyRead(1))
         {
-            if (serial->read(reinterpret_cast<char *>(temp), 3) == 3 && isHeader(temp))
+            if (serial->read(reinterpret_cast<char *>(temp), 3) == 3 &&
+                isHeader(temp))
             {
                 // Header found, read the command byte
                 while (timer.elapsed() < timeoutMs)
@@ -155,7 +160,8 @@ bool SerialHandler::sendData(const uint8_t *data, size_t length)
 
 bool SerialHandler::sendData(const std::vector<uint8_t> &data)
 {
-    if (serial->write(reinterpret_cast<const char *>(data.data()), data.size()) == data.size())
+    if (serial->write(reinterpret_cast<const char *>(data.data()), data.size()) ==
+        data.size())
     {
         return true;
     }

@@ -20,5 +20,5 @@ void DiffDriveControl::onVelocityCommand(geometry_msgs::msg::Twist cmd_vel)
     const float v_left = (v - half_base * w) / wheel_radius_;
     const float v_right = (v + half_base * w) / wheel_radius_;
 
-    emit sendSetpoints(ControlMode::SPEED_CONTROL, {v_left, v_right});
+    emit sendSetpoints({v_left, v_right});
 }

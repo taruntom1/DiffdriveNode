@@ -1,12 +1,12 @@
 #ifndef SERIALHANDLER_H
 #define SERIALHANDLER_H
 
+#include <QElapsedTimer>
 #include <QObject>
 #include <QSerialPort>
 #include <QSerialPortInfo>
-#include <QElapsedTimer>
-#include <deque>
 #include <QThread>
+#include <deque>
 
 #include "commands.h"
 
@@ -32,8 +32,9 @@ public:
     explicit SerialHandler(QObject *parent = nullptr);
     ~SerialHandler();
 
-    bool connectSerial(const QString &port_name, int baud_rate, QString *error_message);
-    void disconnectSerial();
+    bool connectSerial(const QString &port_name, int baud_rate,
+                       QString *error_message);
+    bool disconnectSerial();
     bool checkConnection();
 
     qint64 ping(Command command);

@@ -6,9 +6,9 @@ Odometry::Odometry(odometry_config_t config, QObject *parent)
 {
 }
 
-void Odometry::updateEncoderOdometry(std::vector<timestamped_angle_t> timestamped_angles)
+void Odometry::updateEncoderOdometry(std::pair<timestamp_t, std::vector<odometry_t>> odometry)
 {
-    encoderOdometry_.update(timestamped_angles);
+    encoderOdometry_.update(odometry);
     emit publishEncoderOdometry(encoderOdometry_.getOdometryMsg());
 }
 
