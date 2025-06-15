@@ -12,7 +12,6 @@ TimeSyncClient::TimeSyncClient(SerialHandler *serialHandler,
     connect(&syncTimer, &QTimer::timeout, this, &TimeSyncClient::sendSyncRequest);
     connect(communicationInterface, &CommunicationInterface::timeSyncReplyReceived,
             this, &TimeSyncClient::readSyncReply, Qt::DirectConnection);
-    syncTimer.start(3000);
 }
 
 uint16_t TimeSyncClient::crc16_ccitt(const uint8_t *data, size_t length)
@@ -27,9 +26,9 @@ uint16_t TimeSyncClient::crc16_ccitt(const uint8_t *data, size_t length)
     return crc;
 }
 
-void TimeSyncClient::startSync()
+void TimeSyncClient::startSync(uint32_t period_ms)
 {
-    // Sync every 3 second
+    syncTimer.start(period_ms);
 }
 
 void TimeSyncClient::stopSync()
@@ -66,7 +65,7 @@ void TimeSyncClient::readSyncReply()
     int64_t sync_mcu_time_ns = t1 * 1000;
 
     int64_t delta = sync_sys_time_ns - sync_mcu_time_ns;
-    //int64_t delay = t3 - t0;
+    // int64_t delay = t3 - t0;
 
     if (has_previous_sync)
     {

@@ -16,7 +16,7 @@ ControllerManager::ControllerManager(CommunicationInterface *commInterface,
                         { return connectController(); }, 10, 1000))
         return;
 
-    emit setTimeSync(true);
+    setTimeSync(true);
 
     if (!retryOperation([&]()
                         { return setControllerProperties(); }, 10, 1000))
@@ -47,9 +47,9 @@ void ControllerManager::manageQtConnections()
 
 bool ControllerManager::readConfigurationJson()
 {
-    // std::string package_path = ament_index_cpp::get_package_share_directory("communication_interface");
+    // std::string package_path = ament_index_cpp::get_package_share_directory("drivelink_interface");
     // std::string path = package_path + "/config/controller_config.json";
-    std::string path = "/home/tarun/ros2_ws/install/communication_interface/share/communication_interface/config/controller_config.json";
+    std::string path = "/home/tarun/ros2_ws/install/drivelink_interface/share/drivelink_interface/config/controller_config.json";
     QString json_path = QString::fromStdString(path);
 
     RCLCPP_INFO(logger, "Reading configuration JSON from: %s", json_path.toStdString().c_str());
@@ -146,7 +146,7 @@ void ControllerManager::setTimeSync(bool status)
     if (status)
     {
         RCLCPP_INFO(logger, "Enabling time synchronization");
-        emit startTimesync();
+        emit startTimesync(3000); // time syncronization period is 3 seconds
     }
     else
     {

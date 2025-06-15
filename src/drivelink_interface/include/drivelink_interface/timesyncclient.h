@@ -38,7 +38,7 @@ private:
     uint16_t crc16_ccitt(const uint8_t *data, size_t length);
 
 public slots:
-    void startSync();
+    void startSync(uint32_t period_ms = 3000);
     void stopSync();
 private slots:
     void sendSyncRequest();

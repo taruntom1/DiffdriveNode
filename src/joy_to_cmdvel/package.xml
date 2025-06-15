@@ -16,11 +16,6 @@
   <depend>sensor_msgs</depend>
   <depend>geometry_msgs</depend>
 
-  <!-- Run dependencies (redundant with <depend>, but good for clarity) -->
-  <exec_depend>rclcpp</exec_depend>
-  <exec_depend>sensor_msgs</exec_depend>
-  <exec_depend>geometry_msgs</exec_depend>
-
   <!-- Test dependencies -->
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>

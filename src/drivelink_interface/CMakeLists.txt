@@ -7,6 +7,7 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 endif()
 
 # Ensure Qt6 is findable (you may already have this in your environment)
+# Provide Qt directories if not included  in the environment
 list(APPEND CMAKE_PREFIX_PATH "/home/tarun/Qt/6.9.0/gcc_64/lib/cmake")
 
 # Enable Qt automoc and autouic if needed
@@ -80,7 +81,10 @@ install(DIRECTORY config
   DESTINATION share/${PROJECT_NAME}
 )
 
-
+# Install launch files
+install(DIRECTORY launch
+  DESTINATION share/${PROJECT_NAME}/
+)
 
 # Testing (optional)
 if(BUILD_TESTING)
