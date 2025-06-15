@@ -41,15 +41,15 @@ void ControllerManager::manageQtConnections()
     QObject::connect(this, &ControllerManager::sendWheelData, commInterface, &CommunicationInterface::sendWheelData);
 
     // TimeSyncClient Connections
-    QObject::connect(this, &ControllerManager::startTimesync, timeSyncClient, &TimeSyncClient::startSync);
-    QObject::connect(this, &ControllerManager::stopTimesync, timeSyncClient, &TimeSyncClient::stopSync);
+    QObject::connect(this, &ControllerManager::setTimeSync, timeSyncClient, &TimeSyncClient::startSync, Qt::QueuedConnection);
+    QObject::connect(this, &ControllerManager::stopTimesync, timeSyncClient, &TimeSyncClient::stopSync, Qt::QueuedConnection);
 }
 
 bool ControllerManager::readConfigurationJson()
 {
-    // std::string package_path = ament_index_cpp::get_package_share_directory("drivelink_interface");
-    // std::string path = package_path + "/config/controller_config.json";
-    std::string path = "/home/tarun/ros2_ws/install/drivelink_interface/share/drivelink_interface/config/controller_config.json";
+    std::string package_path = ament_index_cpp::get_package_share_directory("drivelink_interface");
+    std::string path = package_path + "/config/controller_config.json";
+    //std::string path = "/home/tarun/ros2_ws/install/drivelink_interface/share/drivelink_interface/config/controller_config.json";
     QString json_path = QString::fromStdString(path);
 
     RCLCPP_INFO(logger, "Reading configuration JSON from: %s", json_path.toStdString().c_str());

@@ -38,9 +38,9 @@ int main(int argc, char *argv[])
 
     // --- Application Modules ---
     // Reading configurations from yaml file
-    // std::string package_path = ament_index_cpp::get_package_share_directory("drivelink_interface");
-    // std::string path = package_path + "/config/node_config.yaml";
-    std::string path = "/home/tarun/ros2_ws/install/drivelink_interface/share/drivelink_interface/config/node_config.yaml";
+    std::string package_path = ament_index_cpp::get_package_share_directory("drivelink_interface");
+    std::string path = package_path + "/config/node_config.yaml";
+    //std::string path = "/home/tarun/ros2_ws/install/drivelink_interface/share/drivelink_interface/config/node_config.yaml";
     NodeConfigParser parser(path);
 
     if (!parser.isValid())

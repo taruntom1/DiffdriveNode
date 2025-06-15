@@ -1,9 +1,11 @@
 {
-  "name": "jazzy desktop-full",
+  "name": "Riggu Control",
   "dockerFile": "Dockerfile",
   "runArgs": [
     "--privileged",
-    "--network=host"
+    "--network=host",
+    "--device=/dev/ttyUSB0",
+    "--device=/dev/video0"
   ],
   "workspaceMount": "source=${localWorkspaceFolder},target=/${localWorkspaceFolderBasename},type=bind",
   "workspaceFolder": "/${localWorkspaceFolderBasename}",

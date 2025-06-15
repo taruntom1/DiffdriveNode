@@ -12,6 +12,8 @@ TimeSyncClient::TimeSyncClient(SerialHandler *serialHandler,
     connect(&syncTimer, &QTimer::timeout, this, &TimeSyncClient::sendSyncRequest);
     connect(communicationInterface, &CommunicationInterface::timeSyncReplyReceived,
             this, &TimeSyncClient::readSyncReply, Qt::DirectConnection);
+
+    //startSync(3000);
 }
 
 uint16_t TimeSyncClient::crc16_ccitt(const uint8_t *data, size_t length)
