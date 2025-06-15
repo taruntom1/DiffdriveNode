@@ -111,6 +111,7 @@
         "qjsonobject": "cpp",
         "qjsonarray": "cpp",
         "qfile": "cpp",
-        "qtimer": "cpp"
+        "qtimer": "cpp",
+        "qstring": "cpp"
     }
 }
